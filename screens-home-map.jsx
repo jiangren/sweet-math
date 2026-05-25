@@ -1,9 +1,28 @@
 // ─── Home screen ──────────────────────────────────────────────────────────
-function HomeScreen({ lang, theme, setTheme, onStart, onBadges, hasProgress, progress }) {
+function HomeScreen({ lang, theme, setTheme, onStart, onBadges, hasProgress, progress, playerName, onSetName }) {
   const S = window.__SweetMath.STRINGS;
   const T = window.__SweetMath.THEMES;
   const tx = window.__SweetMath.t;
   const themeData = T[theme];
+
+  const [editingName, setEditingName] = React.useState(false);
+  const [draft, setDraft] = React.useState(playerName || '');
+  const inputRef = React.useRef(null);
+  React.useEffect(() => { setDraft(playerName || ''); }, [playerName]);
+  React.useEffect(() => {
+    if (editingName && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editingName]);
+
+  const commit = () => {
+    const v = (draft || '').trim().slice(0, 16);
+    onSetName(v);
+    setEditingName(false);
+    window.__SweetMath.Sound.pop();
+  };
+  const cancel = () => { setDraft(playerName || ''); setEditingName(false); };
 
   return (
     <div className="home-wrap">
@@ -17,6 +36,49 @@ function HomeScreen({ lang, theme, setTheme, onStart, onBadges, hasProgress, pro
                        : <>Sweet <span className="home-hero-em">Math</span> Land</>}
       </h1>
       <p className="home-sub">{tx(S.appTagline, lang)} · {tx(S.ageHint, lang)}</p>
+
+      {/* Greeting / name editor */}
+      <div className="hello-row">
+        {editingName ? (
+          <div className="hello-edit">
+            <input ref={inputRef}
+                   className="hello-input"
+                   value={draft}
+                   maxLength={16}
+                   placeholder={tx(S.playerNamePh, lang)}
+                   onChange={(e) => setDraft(e.target.value)}
+                   onKeyDown={(e) => {
+                     if (e.key === 'Enter') commit();
+                     if (e.key === 'Escape') cancel();
+                   }} />
+            <button className="hello-btn primary" onClick={commit}>
+              {tx(S.saveName, lang)}
+            </button>
+            <button className="hello-btn" onClick={cancel}>
+              {tx(S.cancel, lang)}
+            </button>
+          </div>
+        ) : playerName ? (
+          <div className="hello-greet">
+            <span className="hello-wave">👋</span>
+            <span className="hello-text">
+              {tx(hasProgress ? S.welcomeBack : S.hi, lang)}
+              <b className="hello-name">{playerName}</b>
+              <span>{lang === 'zh' ? '！' : '!'}</span>
+            </span>
+            <button className="hello-pencil"
+                    title={tx(S.changeName, lang)}
+                    onClick={() => { setEditingName(true); window.__SweetMath.Sound.tap(); }}>
+              ✏️
+            </button>
+          </div>
+        ) : (
+          <button className="hello-setname"
+                  onClick={() => { setEditingName(true); window.__SweetMath.Sound.tap(); }}>
+            ✏️ {tx(S.setName, lang)}
+          </button>
+        )}
+      </div>
 
       <div className="theme-picker">
         {Object.values(T).map(th => (

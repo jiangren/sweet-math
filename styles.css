@@ -1164,3 +1164,187 @@ body[data-device="pc"] #root::before {
     padding: 20px 8px;
   }
 }
+
+
+/* ───── Home greeting / name editor ───── */
+.hello-row {
+  display: flex; justify-content: center;
+  margin: -8px 0 18px;
+  min-height: 56px;
+  align-items: center;
+}
+.hello-greet {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 10px 16px 10px 18px;
+  box-shadow: var(--shadow);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.hello-wave { font-size: 26px; display: inline-block; animation: wave 1.6s ease-in-out infinite; transform-origin: 70% 70%; }
+@keyframes wave { 0%, 60%, 100% { transform: rotate(0); } 15% { transform: rotate(18deg); } 30% { transform: rotate(-10deg); } 45% { transform: rotate(14deg); } }
+.hello-text { white-space: nowrap; }
+.hello-name { color: var(--primary-deep); margin: 0 2px; font-weight: 800; }
+.hello-pencil {
+  border: 0; background: var(--surface-2); border-radius: 50%;
+  width: 34px; height: 34px; cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0 2px 0 0 rgba(0,0,0,.08);
+  transition: transform .12s ease;
+}
+.hello-pencil:hover { transform: translateY(-1px) rotate(-6deg); }
+.hello-pencil:active { transform: translateY(1px); }
+
+.hello-setname {
+  border: 0; background: var(--accent-2); color: var(--ink);
+  font-family: inherit; font-weight: 700; font-size: 18px;
+  padding: 10px 22px; border-radius: 999px;
+  box-shadow: 0 4px 0 0 rgba(0,0,0,.1), 0 10px 18px -8px rgba(0,0,0,.18);
+  cursor: pointer;
+  transition: transform .12s ease;
+}
+.hello-setname:hover { transform: translateY(-2px); }
+.hello-setname:active { transform: translateY(2px); }
+
+.hello-edit {
+  display: inline-flex; gap: 8px; align-items: center;
+  background: var(--surface); border-radius: 999px;
+  padding: 6px 8px 6px 18px;
+  box-shadow: var(--shadow);
+}
+.hello-input {
+  border: 0; background: transparent;
+  font-family: inherit; font-size: 22px; font-weight: 700;
+  color: var(--ink);
+  width: 220px; outline: 0;
+}
+.hello-input::placeholder { color: var(--ink-soft); font-weight: 600; }
+.hello-btn {
+  border: 0; background: var(--surface-2); color: var(--ink);
+  font-family: inherit; font-weight: 700; font-size: 15px;
+  padding: 8px 16px; border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 0 rgba(0,0,0,.08);
+}
+.hello-btn.primary { background: var(--primary); color: #fff; box-shadow: 0 3px 0 0 var(--primary-deep); }
+.hello-btn:active { transform: translateY(1px); }
+
+/* ───── Sync modal ───── */
+.sync-overlay {
+  position: fixed; inset: 0; z-index: 2147483640;
+  background: rgba(40, 25, 35, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: syncFadeIn .18s ease-out;
+}
+@keyframes syncFadeIn { from { opacity: 0; } to { opacity: 1; } }
+.sync-modal {
+  background: var(--surface);
+  border-radius: 28px;
+  padding: 28px 28px 22px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 24px 60px -12px rgba(0,0,0,.35);
+  position: relative;
+  animation: syncSlideUp .22s cubic-bezier(.2,.8,.3,1.2);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+@keyframes syncSlideUp { from { transform: translateY(20px) scale(.96); opacity: 0; } to { transform: none; opacity: 1; } }
+.sync-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 0; background: var(--surface-2); color: var(--ink-soft);
+  font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.sync-close:hover { background: var(--primary); color: #fff; }
+.sync-title {
+  margin: 0 0 8px;
+  font-family: 'Fredoka', 'ZCOOL KuaiLe', sans-serif;
+  font-size: 26px;
+  color: var(--primary-deep);
+}
+.sync-hint {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.sync-textarea {
+  width: 100%;
+  min-height: 130px;
+  max-height: 220px;
+  resize: vertical;
+  border: 2px solid var(--surface-2);
+  background: var(--surface-2);
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+  word-break: break-all;
+  outline: 0;
+  box-sizing: border-box;
+}
+.sync-textarea:focus { border-color: var(--primary); background: var(--surface); }
+.sync-row {
+  display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;
+}
+.sync-btn {
+  border: 0; background: var(--surface-2); color: var(--ink);
+  font-family: inherit; font-weight: 700; font-size: 15px;
+  padding: 12px 22px; border-radius: 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  box-shadow: 0 3px 0 0 rgba(0,0,0,.08);
+  transition: transform .12s ease;
+}
+.sync-btn:hover:not(:disabled) { transform: translateY(-1px); }
+.sync-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 0 rgba(0,0,0,.08); }
+.sync-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.sync-btn.primary {
+  background: var(--primary); color: #fff;
+  box-shadow: 0 4px 0 0 var(--primary-deep);
+}
+.sync-btn.primary.ok {
+  background: var(--accent); color: var(--ink);
+  box-shadow: 0 4px 0 0 rgba(0,0,0,.12);
+}
+.sync-msg {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 15px;
+}
+.sync-msg.ok { background: rgba(107, 212, 176, 0.2); color: #1e7a55; }
+.sync-msg.bad { background: rgba(229, 88, 110, 0.15); color: var(--primary-deep); }
+.sync-steps {
+  margin-top: 18px;
+  background: var(--surface-2);
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+.sync-steps b { color: var(--primary-deep); margin-right: 6px; }
+
+@media (max-width: 720px) {
+  .hello-greet { font-size: 18px; padding: 8px 14px; }
+  .hello-wave { font-size: 22px; }
+  .hello-input { font-size: 18px; width: 160px; }
+  .hello-setname { font-size: 16px; padding: 8px 18px; }
+  .sync-modal { padding: 22px 18px 18px; border-radius: 22px; }
+  .sync-title { font-size: 22px; }
+}

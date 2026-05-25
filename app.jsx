@@ -8,20 +8,25 @@ function loadProgress() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const j = JSON.parse(raw);
-    return {
-      stars: j.stars || 0,
-      cleared: new Set(j.cleared || []),
-      perfects: new Set(j.perfects || []),
-      starsByLevel: j.starsByLevel || {},
-      bestStreak: j.bestStreak || 0,
-      themesTried: new Set(j.themesTried || []),
-      badges: new Set(j.badges || []),
-      newBadges: new Set(j.newBadges || []),
-    };
+    return progressFromJSON(j);
   } catch (e) { return null; }
 }
-function saveProgress(p) {
-  const j = {
+function progressFromJSON(j) {
+  return {
+    playerName: typeof j.playerName === 'string' ? j.playerName : '',
+    stars: j.stars || 0,
+    cleared: new Set(j.cleared || []),
+    perfects: new Set(j.perfects || []),
+    starsByLevel: j.starsByLevel || {},
+    bestStreak: j.bestStreak || 0,
+    themesTried: new Set(j.themesTried || []),
+    badges: new Set(j.badges || []),
+    newBadges: new Set(j.newBadges || []),
+  };
+}
+function progressToJSON(p) {
+  return {
+    playerName: p.playerName || '',
     stars: p.stars,
     cleared: Array.from(p.cleared),
     perfects: Array.from(p.perfects),
@@ -31,14 +36,44 @@ function saveProgress(p) {
     badges: Array.from(p.badges),
     newBadges: Array.from(p.newBadges),
   };
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(j)); } catch (e) {}
+}
+function saveProgress(p) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progressToJSON(p))); } catch (e) {}
 }
 function freshProgress() {
   return {
+    playerName: '',
     stars: 0, cleared: new Set(), perfects: new Set(),
     starsByLevel: {}, bestStreak: 0, themesTried: new Set(),
     badges: new Set(), newBadges: new Set(),
   };
+}
+
+// Base64-encode a JSON object, UTF-8 safe (Chinese names work).
+function encodeSync(obj) {
+  const json = JSON.stringify({ v: 1, app: 'sweetmath', data: obj });
+  const bytes = new TextEncoder().encode(json);
+  let bin = '';
+  bytes.forEach(b => { bin += String.fromCharCode(b); });
+  // Wrap with bookends so users can paste the whole block safely.
+  return 'SWEET-' + btoa(bin) + '-MATH';
+}
+function decodeSync(code) {
+  if (!code) return null;
+  let s = String(code).trim();
+  // Tolerate whitespace / line breaks / quotes from copy-paste.
+  s = s.replace(/\s+/g, '').replace(/^["']|["']$/g, '');
+  const m = s.match(/^SWEET-([A-Za-z0-9+/=]+)-MATH$/);
+  if (!m) return null;
+  try {
+    const bin = atob(m[1]);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const json = new TextDecoder().decode(bytes);
+    const parsed = JSON.parse(json);
+    if (parsed && parsed.app === 'sweetmath' && parsed.data) return parsed.data;
+    return null;
+  } catch (e) { return null; }
 }
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
@@ -54,6 +89,20 @@ function App() {
   const [screen, setScreen] = useState('home');   // home | map | quiz | badges
   const [currentLevel, setCurrentLevel] = useState(null);
   const [progress, setProgress] = useState(() => loadProgress() || freshProgress());
+  const [syncOpen, setSyncOpen] = useState(null);  // null | 'export' | 'import'
+
+  // Hide the ⚙️ Tweaks gear unless URL has ?settings=1 (or ?tweaks / ?admin).
+  // Keeps kids out of the parent panel — share the link with ?settings=1 to enable.
+  const settingsEnabled = useMemo(() => {
+    try {
+      const q = new URLSearchParams(window.location.search);
+      return q.has('settings') || q.has('tweaks') || q.has('admin');
+    } catch (e) { return false; }
+  }, []);
+
+  const setPlayerName = useCallback((name) => {
+    setProgress(p => ({ ...p, playerName: (name || '').slice(0, 16) }));
+  }, []);
 
   // Persist on change
   useEffect(() => { saveProgress(progress); }, [progress]);
@@ -134,6 +183,15 @@ function App() {
     }
   };
 
+  const onImportData = useCallback((code) => {
+    const data = decodeSync(code);
+    if (!data) return false;
+    const restored = progressFromJSON(data);
+    setProgress(restored);
+    saveProgress(restored);
+    return true;
+  }, []);
+
   // Clear new-badge markers when entering badges screen
   useEffect(() => {
     if (screen === 'badges' && progress.newBadges.size) {
@@ -194,6 +252,14 @@ function App() {
           }}>
             {t.soundOn ? '🔔' : '🔕'}
           </button>
+          {settingsEnabled && (
+            <button className="chip" title={t.lang === 'zh' ? '设置' : 'Settings'} onClick={() => {
+              window.__SweetMath.Sound.tap();
+              window.postMessage({ type: '__activate_edit_mode' }, '*');
+            }}>
+              ⚙️
+            </button>
+          )}
         </div>
       </div>
 
@@ -204,7 +270,9 @@ function App() {
                       onStart={onStartFromHome}
                       onBadges={() => setScreen('badges')}
                       hasProgress={hasProgress}
-                      progress={progress} />
+                      progress={progress}
+                      playerName={progress.playerName}
+                      onSetName={setPlayerName} />
         )}
         {screen === 'map' && (
           <LevelMap lang={t.lang} theme={t.theme}
@@ -259,6 +327,19 @@ function App() {
                       ]}
                       onChange={(v) => setTweak('device', v)} />
         </TweakSection>
+        <TweakSection label={tx(S.playerNameLabel, t.lang)}>
+          <TweakText label={tx(S.playerNameLabel, t.lang)}
+                     value={progress.playerName}
+                     placeholder={tx(S.playerNamePh, t.lang)}
+                     onChange={(v) => setPlayerName(v)} />
+        </TweakSection>
+        <TweakSection label={tx(S.syncLabel, t.lang)}>
+          <TweakButton label={tx(S.exportTitle, t.lang)}
+                       onClick={() => { window.__SweetMath.Sound.tap(); setSyncOpen('export'); }} />
+          <TweakButton label={tx(S.importTitle, t.lang)}
+                       secondary
+                       onClick={() => { window.__SweetMath.Sound.tap(); setSyncOpen('import'); }} />
+        </TweakSection>
         <TweakSection label={t.lang === 'zh' ? '家长' : 'Parent'}>
           <TweakToggle label={tx(S.parentMode, t.lang)}
                        value={t.parentMode}
@@ -268,6 +349,15 @@ function App() {
                        onClick={onResetProgress} />
         </TweakSection>
       </TweaksPanel>
+
+      {/* Sync modal */}
+      {syncOpen && (
+        <SyncModal lang={t.lang}
+                   mode={syncOpen}
+                   code={syncOpen === 'export' ? encodeSync(progressToJSON(progress)) : ''}
+                   onImport={onImportData}
+                   onClose={() => setSyncOpen(null)} />
+      )}
 
       {/* Parent mode panel */}
       {t.parentMode && (
@@ -280,6 +370,7 @@ function App() {
           <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 10,
                         color: 'var(--primary-deep)' }}>
             👨‍👧 {tx(S.parentTip1, t.lang)}
+            {progress.playerName ? <span style={{ marginLeft: 8, color: 'var(--ink)' }}>· {progress.playerName}</span> : null}
           </div>
           <div style={{ marginBottom: 12, color: 'var(--ink-soft)' }}>
             {tx(S.parentTipBody, t.lang)}
