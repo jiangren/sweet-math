@@ -1,0 +1,62 @@
+data.jsx
+  c89dbf9da8cf1c18 93-120,403-500
+sync-modal.jsx
+  c89dbf9da8cf1c18 1-122
+styles.css
+  c89dbf9da8cf1c18 1167-1349
+screens-home-map.jsx
+  c89dbf9da8cf1c18 2,8-26,40-81
+index.html
+  c89dbf9da8cf1c18 21
+app.jsx
+  c89dbf9da8cf1c18 11,14-29,40-41,45,52-76,92-105,186-193,255-262,273-275,330-334,336-342,353-360,373
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.8",
+  "base_commit_sha": "7fe5ba6c0455bf4dab796249f5bb352371282c37",
+  "prompts": {
+    "c89dbf9da8cf1c18": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "db67e192-db8a-4cad-9def-62036c331a05",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "hzjiangren",
+      "messages": [],
+      "total_additions": 603,
+      "total_deletions": 17,
+      "accepted_lines": 602,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "data.jsx": {
+          "additions": 126,
+          "accepted_lines": 126
+        },
+        "styles.css": {
+          "additions": 186,
+          "deletions": 2,
+          "accepted_lines": 185
+        },
+        "sync-modal.jsx": {
+          "additions": 122,
+          "accepted_lines": 122
+        },
+        "screens-home-map.jsx": {
+          "additions": 63,
+          "deletions": 1,
+          "accepted_lines": 63
+        },
+        "index.html": {
+          "additions": 1,
+          "accepted_lines": 1
+        },
+        "app.jsx": {
+          "additions": 105,
+          "deletions": 14,
+          "accepted_lines": 105
+        }
+      }
+    }
+  }
+}
