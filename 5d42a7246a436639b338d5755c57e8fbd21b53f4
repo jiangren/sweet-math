@@ -1,0 +1,71 @@
+screen-quiz.jsx
+  c89dbf9da8cf1c18 1-309
+screens-home-map.jsx
+  c89dbf9da8cf1c18 1-183
+screen-badges.jsx
+  c89dbf9da8cf1c18 1-53
+tweaks-panel.jsx
+  c89dbf9da8cf1c18 1-568
+styles.css
+  c89dbf9da8cf1c18 1-1166
+data.jsx
+  c89dbf9da8cf1c18 1-433
+app.jsx
+  c89dbf9da8cf1c18 1-299
+index.html
+  c89dbf9da8cf1c18 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.8",
+  "base_commit_sha": "5d42a7246a436639b338d5755c57e8fbd21b53f4",
+  "prompts": {
+    "c89dbf9da8cf1c18": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "db67e192-db8a-4cad-9def-62036c331a05",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "hzjiangren",
+      "messages": [],
+      "total_additions": 3034,
+      "total_deletions": 0,
+      "accepted_lines": 3034,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "index.html": {
+          "additions": 23,
+          "accepted_lines": 23
+        },
+        "styles.css": {
+          "additions": 1166,
+          "accepted_lines": 1166
+        },
+        "tweaks-panel.jsx": {
+          "additions": 568,
+          "accepted_lines": 568
+        },
+        "screen-badges.jsx": {
+          "additions": 53,
+          "accepted_lines": 53
+        },
+        "screens-home-map.jsx": {
+          "additions": 183,
+          "accepted_lines": 183
+        },
+        "screen-quiz.jsx": {
+          "additions": 309,
+          "accepted_lines": 309
+        },
+        "app.jsx": {
+          "additions": 299,
+          "accepted_lines": 299
+        },
+        "data.jsx": {
+          "additions": 433,
+          "accepted_lines": 433
+        }
+      }
+    }
+  }
+}
