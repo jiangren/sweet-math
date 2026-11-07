@@ -227,7 +227,7 @@ function QuizScreen({ lang, theme, level, onExit, onComplete }) {
         </div>
       </div>
 
-      <div className="question-card">
+      <div className={`question-card${q.mode === 'drag' ? ' drag-question' : ''}`}>
         <div className="qprompt">{tx(S[q.prompt], lang)}</div>
 
         {q.mode === 'count' && (

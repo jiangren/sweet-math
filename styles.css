@@ -619,6 +619,11 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 /* Drag tokens */
+.drag-question, .drag-token, .drag-ghost {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
 .drag-tray {
   display: flex; gap: 14px; justify-content: center;
   margin-top: 18px;
@@ -637,7 +642,6 @@ button { font-family: inherit; cursor: pointer; }
     0 6px 0 0 rgba(0,0,0,.1),
     0 14px 28px -10px rgba(0,0,0,.18);
   cursor: grab;
-  user-select: none;
   touch-action: none;
   transition: transform .12s ease;
 }
